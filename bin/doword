@@ -1,0 +1,20 @@
+#!/bin/bash
+fulldef=
+
+for word in $*
+do
+    # definitions 
+    xterm -e "wn $word -over | less" &
+
+    # synonyms
+    xterm -e "wn $word -synsn -synsv -synsa -synsr | less" &
+
+    fulldef=$fulldef$word
+done
+
+# anagrams
+#print "\nAnagrams of $word\n\n";
+xterm -e "an $fulldef | less" &
+
+xterm -e "doword.pl $fulldef | less" &
+

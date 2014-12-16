@@ -1,0 +1,32 @@
+# Script to check availability of books at TBABS.
+infile="./inventory.csv" 
+found="./found.csv"
+notfound="./notfound.csv"
+
+while read line
+do
+
+# The title is the first entry.  Pull it out and turn the spaces into pluses.
+title=$(echo $line | cut --fields=2 --delimiter=\" | tr ' ' '+' )
+
+# Query the database.
+wget --post-data="CurrScr=basicsearch&Str=${title}&Index=AnyTitle&Button=Submit" http://tbabs.osl.state.or.us/cgi-bin/webopac.cgi/or1a
+
+#echo $title
+downbook=$(grep -wc '<TD  Valign="top">DB' or1a)
+cassette=$(grep -wc '<TD  Valign="top">C'  or1a)
+rm -f or1a
+
+if (( downbook > 0  || cassette > 0 )); then
+   if (( cassette > 0 )); then
+      line=$line"Cassette  "
+   fi
+   if (( downbook > 0 )); then
+      line=$line"DownloadableBook   "
+   fi
+   echo $line >> $found
+else
+   echo $line >> $notfound
+fi
+
+done < $infile

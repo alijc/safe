@@ -1,0 +1,5 @@
+#!/bin/bash
+# dvdlist
+# Use the handbrake cli to list the duration of each title in the cupholder.
+
+HandBrakeCLI -i /media/ali/*/ -t 0 2>&1 | egrep "\+ title|\+ duration"

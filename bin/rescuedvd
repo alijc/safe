@@ -1,0 +1,14 @@
+ddrescue /dev/dvd rescuedvd.iso rescuedvd.log
+
+# If ddrescue reports errors (and it most likely will),
+# rerun it using raw device access, bypassing the kernel
+# cache to grab the last few available sectors:
+#
+#
+#raw /dev/raw/raw1 /dev/dvd
+#ddrescue --block-size=2048 --max-retries=3 --complete-only  /dev/raw/raw1 rescuedvd rescuedvd.log
+#raw /dev/raw/raw1 0 0
+
+
+# or:
+#ddrescue -d /dev/dvd DVD_NAME.iso DVD_NAME.iso.log 

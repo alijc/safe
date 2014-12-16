@@ -1,0 +1,5 @@
+#xterm -fg black -bg LightGreen -e ssh corbina@63.226.244.126 &
+#aterm -fg black -bg PaleGreen -e ssh corbina@63.226.244.126 &
+#rxvt -fg black -bg SpringGreen1 -e ssh corbina@63.226.244.126 &
+#xterm -fg black -bg PaleGreen1 -e ssh -Y corbina@63.226.244.126 &
+xterm -fg black -bg DarkSeaGreen1 -e ssh -Y corbina@63.226.244.126 &

@@ -1,0 +1,30 @@
+#!/bin/bash
+# dvdrip
+# Use the handbrake cli to rip the selected titles from the dvd.
+
+USAGE="Usage: $0 filename title1 ... titleN"
+if [[ $# < 2 ]]; then
+	echo "$USAGE"
+	exit 1
+fi
+
+preset='--preset="Android Tablet"'
+input=" --input /media/ali/*/"
+subopt="--subtitle 1 --subtitle-default 1"
+
+filename=$1; shift;
+
+while (( "$#" )); do
+
+	titlenum=$1
+	title=" --title $titlenum"
+	output="--output $filename-$titlenum.mkv"   # should be mp4
+	audio="-E ffaac"     # workaround for Debian Bug #739784
+
+	HandBrakeCLI $preset $subopt $audio $input $title $output
+
+	shift
+
+done
+
+eject

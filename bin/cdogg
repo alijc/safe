@@ -1,0 +1,31 @@
+#!/bin/bash
+# cdogg - convert wav files to ogg files
+#set -x
+
+usage="$0 {directory number} [tempo]"
+
+dst=$(basename $PWD)
+src=${dst%x}
+
+if [[ $# -eq 0 ]]; then
+    echo $usage
+    exit
+fi
+
+dir=$1
+
+if [[ $# -gt 1 ]]; then
+    tempo=$2
+else
+    tempo=1.5
+fi
+
+mkdir -p $dir
+cd $dir
+
+shopt -s nullglob
+for wav in ../../$src/$dir/*wav; do
+    ogg=$(basename $wav)
+    ogg=${ogg%cdda.wav}ogg
+    sox $wav $ogg tempo $tempo
+done
