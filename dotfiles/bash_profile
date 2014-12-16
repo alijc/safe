@@ -1,0 +1,31 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# Set the environment for FlashFx
+#if [ -f ~/flashfx/flashfx/bin/linux/setfxenv ]; then
+#  . ~/flashfx/flashfx/bin/linux/setfxenv ~/flashfx/flashfx Linux custom 386 debug
+#fi
+
+# User specific environment and startup programs
+
+PATH=$HOME/bin:/usr/java/bin:$PATH
+PATH=$HOME/eclipse:$HOME/eclipse/android-sdk-linux_x86/tools:$PATH
+BASH_ENV=$HOME/.bashrc
+USERNAME="ali"
+LANG=en_US
+
+#JAZZ=/usr/local/jazz
+
+export PS1="\w>"
+
+export EDITOR=emacs
+export USERNAME BASH_ENV PATH LANG
+
+# Set the draglock button (no longer works in xorg.conf)
+xinput set-prop 'PS2++ Logitech TrackMan' 'Evdev Drag Lock Buttons' 8 1
+
+#startx

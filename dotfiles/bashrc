@@ -1,0 +1,392 @@
+# set the display to who rlogin'ed to us
+
+export LANG=en_US
+export BROWSER=firefox
+
+#if [ -z "${DISPLAY:-}" ]
+#then
+#    DISPLAY=`who am i|sed -e "s,.*([ ]*,," -e "s,[ ]*).*,,"`:0;
+#    export DISPLAY
+#fi
+
+# Aliases #####################################################################
+
+# changing directories
+
+alias pd='cd -'
+
+# command recall
+
+alias h=history
+
+# listing files
+
+#if [ "$TERM" = "xterm-color" ]; then
+    LS_COLORS="$LS_COLORS:di=34:ex=31:ln=4;35:"
+    LS_COLORS="$LS_COLORS:*.tar=00;35:*.tgz=00;35:*.gz=00;35:*.bz2=00;35"
+    LS_COLORS="$LS_COLORS:*.Z=00;35:*.rpm=00;35:*.cpio=00;35"
+    export LS_COLORS
+    alias ls='ls --color=tty'
+#else
+#    alias ls='ls -F'
+#fi
+
+alias ll='ls -lF'
+alias la='ls -aF'
+alias lla='ls -alF'
+alias lh='ls -d .*'
+alias lld='ll -d'
+alias lsd='ls -d'
+
+if [ "$OS" = "SunOS" ]; then
+    fncut=46-256
+elif [ "$OS" = "FreeBSD" ]; then
+    fncut=44-256
+else
+    fncut=55-256
+fi
+
+alias lsl='lla | grep "\->" | cut -c $fncut'
+alias lrf='lla | grep -v "\->" | cut -c $fncut'
+
+alias dird='ll -p | grep "/"'
+alias dirf='ll -p | grep -v "/"'
+ 
+# managing backup files
+
+alias delb='rm -f *~'
+alias dirb='ls *~'
+
+# listing processes
+
+if [ "$OS" = "HP-UX" ]; then
+    alias psall='ps -ef'
+    alias psme='ps -fu $LOGNAME'
+else
+    alias psall='ps -aux'
+    alias psme='ps -ux'
+fi
+
+# s/w development
+
+pfiles='*.c *.h *.cc *.cpp *.cxx *.hpp Makefile makefile *.mk'
+alias todo='grep -l "????" $pfiles 2> /dev/null'
+alias dirp='ls $pfiles 2> /dev/null'
+
+export CVSROOT=/home/ali/cvs
+export CVS_RSH=/usr/bin/ssh
+
+# environment
+
+alias path='echo PATH=$PATH'
+
+# Misc.
+
+alias tab4='pr -t -e4'
+alias tab8='pr -t -e8'
+alias wh='who | cut -c1-9 | sort -u'
+
+# print 2 pages per sheet, in landscape, with lines and fancy headers,
+# with 4-character tabs, on 8.5x11 paper
+alias enscript='enscript -2rjG -T4 -MLetter'
+
+# Terminal ####################################################################
+
+# Determine number of rows
+#
+function lines
+{
+    if [ "$OS" = "OS/2" ]; then
+	nlines=0
+    elif [ "$OS" = "SunOS" -a "$RELEASE" = "5.5.1" ]; then
+	nlines=0
+    else
+	nLines=`stty size | cut -f 1 -d ' '`
+    fi
+
+    if [ "$nLines" -eq "0" ]; then
+	nLines=$LINES # Use old value.
+
+	if [ "$nLines" -eq "" ]; then
+	    nLines=24 # Value of last resort.
+	fi
+
+    fi
+
+    echo $nLines
+}
+
+# Determine number of columns
+#
+function columns
+{
+    if [ "$OS" = "OS/2" ]; then
+	nColumns=0
+    elif [ "$OS" = "SunOS" -a "$RELEASE" = "5.5.1" ]; then
+	nColumns=0
+    else
+	nColumns=`stty size | cut -f 2 -d ' '`
+    fi
+
+    if [ "$nColumns" -eq "0" ]; then
+	nColumns=$COLUMNS # Use old value
+
+	if [ "$nColumns" -eq "" ]; then
+	    nColumns=80 # Value of last resort.
+	fi
+
+    fi
+
+    echo $nColumns
+}
+
+if [ -t 0 -a -t 1 ]; then
+    if [ -a "$ERASE" -a ! "$OS" = "OS/2" ]; then
+	stty erase "$ERASE"
+    fi
+
+    if [ "$TERM" = "vt100" ]; then
+	stty rows 25
+    fi
+
+    if [ ! "$LINES" ]; then
+	export LINES=`lines`
+    fi
+
+    if [ ! "$COLUMNS" ]; then
+	export COLUMNS=`columns`
+    fi
+fi
+
+
+# pdksh #######################################################################
+
+if [ "$OS" = "Linux" -o "$OS" = "FreeBSD" -o "$OS" = "OS/2" ]; then
+    # we're probably using the Public Domain Korn Shell.
+
+    if [ "$0" = "ksh" -o "$0" = "-ksh" ]; then
+	set -o vi-tabcomplete
+    fi
+fi
+
+# PS1 and Window Title ########################################################
+
+function setwindowtitle
+{
+    if [ ! $# = 0 ]; then
+	title="$*"
+
+	if [ "$TERM" = "xterm" -o "$TERM" = "xterms" ]; then
+	    print -n "\033]2;$title\007"
+	elif [ "$TERM" = "hpterm" ]; then
+	    print -n "\033&f0k${#title}D$title"
+	    print -n "\033&f-1k${#title}D$title"
+	fi
+    fi
+}
+
+function notitle
+{
+    ps1s="$NODE:\${PWD#\${HOME}/}"
+    export PS1="$ps1s>"
+}
+
+function pwdtitle
+{
+    ps1="$NODE:\${PWD}"
+    ps1s="$NODE:\${PWD#\${HOME}/}"
+
+    PS1="$ps1s>"
+
+    if [ "$TERM" = "xterm" -o "$TERM" = "xterms" ]; then
+	PS1="$PS1]2;$ps1s"
+    elif [ "$TERM" = "hpterm" ]; then
+	print -n "\033&f-1k${#NODE}D${NODE}"
+	PS1="$PS1&f0k\${#PWD}D\${PWD}"
+    fi
+
+    export PS1
+}
+
+function nodetitle
+{
+    notitle
+    setwindowtitle $NODE $TERM
+}
+
+notitle
+
+# SunOS #######################################################################
+
+if [ "$OS" = "SunOS" ]; then
+
+    # See /usr/skel/.kshrc on teleport.
+
+    set -h
+    set -o vi
+    set -o bgnice
+    set -o ignoreeof
+
+#   PS1='[ ! $TTY $LOGNAME->${PWD} > '
+
+    # my aliases
+#   alias	h="history -l"
+#   alias	f="finger"
+#   alias	L="ls -ald"
+#   alias	l="ls -alF"
+#   alias	lf="ls -Fa"
+#   alias	dir="ls -alF | less"
+#   alias	lc="ls -aCF"
+#   alias	rm="rm -i"
+#   alias	m="$MAILER"
+#   alias	mail="$MAILER"
+#   alias	J="ps -eaf"
+
+fi
+
+# ESI #########################################################################
+
+#if [ "$DOMAIN" = "elcsci.com" ]; then
+#
+#    alias eco=/esi_sw/common/tools/rcsbin/co
+#    alias eci=/esi_sw/common/tools/rcsbin/ci
+#    alias showlocks='rlog -l -L *,v | grep -e "RCS file:" -e "locked by:"'
+#   alias castle=`. $HOME/bin/castle`
+#
+#fi
+
+# Misc. Functions #############################################################
+
+# @(#) up  Move up a directory tree specified number of levels
+# Author: David Wood, March 1990
+# Adapted for Korn shell by Becca Thomas, December 1992
+#
+function up
+{
+    Usage="Usage: `basename $0` [level-count]\\nWhere, level-count >0"
+    case $# in
+        0|1)    ;;                  # correct argument count
+        *)  print -u2 $Usage; return ;; # no more than one argument
+    esac
+    integer count=${1:-1}   # default one level, otherwise use argument
+    if [ $count -lt 1 ]; then      # if argument is not positive
+        print -u2 "level-count must be positive integer\n$Usage";return
+    fi
+
+    oldpwd=$PWD
+    while [ $count -gt 0 ]; do    # while need to climb
+        cd ..                       # go up a level
+        let count=count-1           # one less level to go
+    done
+    OLDPWD=$oldpwd
+    unset oldpwd
+}
+
+# Move to the home directory and then optionally to the directory specified
+# by the argument. For bad typists it makes a jump to $HOME/some/directory
+# a little easier. Just type "home some/directory".
+#
+function home
+{
+    Usage="Usage: `basename $0` [dir]\\nWhere, dir is relative to HOME"
+    case $# in
+	0|1) ;;
+	*) print -u2 $Usage; return;;
+    esac
+    if [ $# -gt 0 ]; then
+	cd $HOME/$1
+    else
+	cd $HOME
+    fi
+}
+
+# Display settings related to the terminal and display.
+#
+function termenv
+{
+    if [ ! "$OS" = "OS/2" ]; then
+        stty
+    fi
+    echo TERM=$TERM
+    echo DISPLAY=$DISPLAY
+    echo COLUMNS=$COLUMNS
+    echo LINES=$LINES
+    echo TERMCAP=$TERMCAP
+}
+
+# Fix terminal settings after resizing a terminal window.
+#
+function fixterm
+{
+    if [ "$OS" = "OS/2" ]; then
+	echo "Not implemented for OS/2"
+	return
+    fi
+
+    newenv=`resize`
+    eval $newenv
+
+    if ( echo $newenv | grep LINES > /dev/null ); then
+	: # do nothing
+    else
+	export LINES=`lines`
+    fi
+
+    if ( echo $newenv | grep COLUMNS > /dev/null ); then
+	: # do nothing
+    else
+	export COLUMNS=`columns`
+    fi
+}
+
+# Display a specified environment variable.
+#
+function show
+{
+    echo "$1=`printenv $1`"
+}
+
+# A combined whence, which, file, and ls -lF.
+#
+function whatis
+{
+    if [ "$#" = "0" ]; then
+	return 0
+    fi
+
+    whenceResult=`whence $1`
+    whichResult=`which $1`
+
+    if [ "${whichResult##no *}" = "" -o "$whichResult" = "" ]; then
+	fileFound=""
+    else
+	fileFound=True
+    fi
+
+    if [ "$whenceResult" = "$whichResult" -a ! "$whichResult" = "" ]; then
+	file $whichResult
+	ls -lF $whichResult
+    elif [ ! "$whenceResult" = "" ]; then
+	echo $whenceResult
+    elif [ ! "$fileFound" = "" ]; then
+	echo $whichResult
+    fi
+
+    unset whichResult whenceResult fileFound
+}
+
+# A wrapper around whatis (above) for multiple arguments.
+#
+function whatare
+{
+    for item in $*; do
+	whatisResult=`whatis $item`
+	if [ "$whatisResult" = "" ]; then
+	    echo "$item: not found"
+	else
+	    echo "$item: $whatisResult"
+	fi
+    done
+
+    unset whatisResult
+}

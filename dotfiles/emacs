@@ -1,0 +1,78 @@
+;--------------------------------------------------------------------------
+;   Libraries
+;--------------------------------------------------------------------------
+
+;;;(setq load-path (append load-path (list "/usr/local/share/emacs/site-lisp")))
+(setq load-path (append load-path (list "~ali/safe/lisp/")))
+(setq load-path (append load-path (list "~ali/safe/lisp/g-client")))
+
+;(setq buffer-file-coding-system "latin-1")
+
+(load "ali" )
+(load "tab4" )
+(load "buffer" )
+;;;(load-library "g")
+
+;;(setq diary-file "~/hevanet/diary")
+;;(add-hook 'list-diary-entries-hook 'include-other-diary-files)
+;;(add-hook 'mark-diary-entries-hook 'mark-included-diary-files)
+
+; .h files are to be C++ header files.
+(setq auto-mode-alist (append '( ("\\.h$" . c++-mode) ) auto-mode-alist ))
+
+
+;(setq gnus-select-method '(nntp "news.hevanet.com")) 
+;(setq nntp-authinfo-function 'nntp-send-authinfo)
+
+;(setq gnus-select-method '(nntp "news.hevanet.com"
+;                                (nntp-address "news.hevanet.com")
+;				(nntp-rlogin-user-name "acorbin")))
+
+
+
+(setq ps-print-color-p nil)
+;;(setq ps-landscape-mode 1)
+
+
+;(setq view-diary-entries-initially t
+;      mark-diary-entries-in-calendar t
+;      mark-holidays-in-calendar t
+;      number-of-diary-entries 7)
+;(add-hook 'diary-display-hook 'fancy-diary-display)
+;(add-hook 'today-visible-calendar-hook 'calendar-mark-today)
+;(add-hook 'list-diary-entries-hook 'sort-diary-entries t)
+
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(auto-compression-mode t nil (jka-compr))
+ '(calendar-holiday-marker (quote holiday-face))
+ '(calendar-holidays (quote ((holiday-fixed 1 1 "New Year's Day") (holiday-float 1 1 3 "Martin Luther King Day") (holiday-float 2 1 3 "President's Day") (holiday-fixed 3 17 "St. Patrick's Day") (holiday-fixed 4 1 "April Fools' Day") (holiday-float 5 0 2 "Mother's Day") (holiday-float 5 1 -1 "Memorial Day") (holiday-float 6 0 3 "Father's Day") (holiday-fixed 7 4 "Independence Day") (holiday-float 9 1 1 "Labor Day") (holiday-fixed 10 31 "Halloween") (holiday-fixed 11 11 "Veteran's Day") (holiday-float 11 4 4 "Thanksgiving") (if all-christian-calendar-holidays (holiday-fixed 1 6 "Epiphany")) (holiday-easter-etc) (if all-christian-calendar-holidays (holiday-greek-orthodox-easter)) (if all-christian-calendar-holidays (holiday-fixed 8 15 "Assumption")) (if all-christian-calendar-holidays (holiday-advent)) (holiday-fixed 12 25 "Christmas") (if all-christian-calendar-holidays (holiday-julian 12 25 "Eastern Orthodox Christmas")) (holiday-rosh-hashanah-etc) (holiday-hanukkah) (holiday-hebrew 9 25 "Hanukkah") (holiday-passover-etc) (holiday-islamic 1 1 (format "Islamic New Year %d" (let ((m displayed-month) (y displayed-year)) (increment-calendar-month m y 1) (extract-calendar-year (calendar-islamic-from-absolute (calendar-absolute-from-gregorian (list m (calendar-last-day-of-month m y) y))))))) (holiday-islamic 9 1 "Ramadan Begins") (if (fboundp (quote atan)) (holiday-chinese-new-year)) (if (fboundp (quote atan)) (solar-equinoxes-solstices)) (if (progn (require (quote cal-dst)) t) (funcall (quote holiday-sexp) calendar-daylight-savings-starts (quote (format "Daylight Savings Time Begins %s" (if (fboundp (quote atan)) (solar-time-string (/ calendar-daylight-savings-starts-time (float 60)) calendar-standard-time-zone-name) ""))))) (funcall (quote holiday-sexp) calendar-daylight-savings-ends (quote (format "Daylight Savings Time Ends %s" (if (fboundp (quote atan)) (solar-time-string (/ calendar-daylight-savings-ends-time (float 60)) calendar-daylight-time-zone-name) "")))))))
+ '(calendar-longitude -122 t)
+ '(case-fold-search t)
+ '(current-language-environment "English")
+ '(global-font-lock-mode t nil (font-lock))
+ '(inhibit-startup-screen t)
+ '(show-paren-mode t nil (paren))
+ '(text-mode-hook (quote (turn-on-auto-fill text-mode-hook-identify)))
+ '(tool-bar-mode nil nil (tool-bar))
+ '(tooltip-mode nil nil (tooltip))
+ '(transient-mark-mode t))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(calendar-today-face ((t (:background "yellow" :inverse-video unspecified))))
+ '(font-lock-builtin-face ((((class color) (background light)) (:foreground "Dark Orchid"))))
+ '(font-lock-constant-face ((((class color) (background light)) (:foreground "Medium Blue"))))
+ '(font-lock-string-face ((t (:foreground "sienna"))))
+ '(font-lock-type-face ((((class color) (background light)) (:foreground "Dark Green"))))
+ '(font-lock-variable-name-face ((((class color) (background light)) (:foreground "DarkGoldenrod4"))))
+ '(holiday-face ((((class color) (background light)) (:background "white" :weight bold))))
+ '(menu ((((type x-toolkit)) (:weight semi-bold :height 150)))))
+
+(put 'narrow-to-region 'disabled nil)

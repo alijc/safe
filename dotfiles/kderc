@@ -1,0 +1,13 @@
+[General]
+StandardFont=Sans,13,-1,0,50,0,0,0,0,0
+activeFont=Sans,13,-1,5,74,0,0,0,0,0
+background=239,239,239
+fixed=Monospace,13,-1,5,50,0,0,0,1,0
+font=Sans,13,-1,5,50,0,0,0,0,0
+menuFont=Sans,13,-1,5,50,0,0,0,0,0
+selectBackground=103,141,178
+selectForeground=255,255,255
+taskbarFont=Sans,13,-1,5,50,0,0,0,0,0
+toolBarFont=Sans,13,-1,5,50,0,0,0,0,0
+windowBackground=255,255,255
+windowForeground=0,0,0

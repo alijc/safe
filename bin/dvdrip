@@ -10,7 +10,7 @@ fi
 
 preset='--preset="Android Tablet"'
 input=" --input /media/ali/*/"
-subopt="--subtitle 1 --subtitle-default 1"
+subopt="--subtitle scan"
 
 filename=$1; shift;
 
