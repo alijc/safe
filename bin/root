@@ -1,1 +1,1 @@
-xterm -bg black -fg white -e su - &
+xterm -fg white -bg black -font 9x15 -e sudo su - &
