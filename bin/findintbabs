@@ -3,30 +3,28 @@ infile="./inventory.csv"
 found="./found.csv"
 notfound="./notfound.csv"
 
+#set -x
+
 while read line
 do
 
 # The title is the first entry.  Pull it out and turn the spaces into pluses.
-title=$(echo $line | cut --fields=2 --delimiter=\" | tr ' ' '+' )
+#title=$(echo $line | cut --fields=2 --delimiter=\" | tr ' ' '+' )
+title=$(echo $line | awk --field-separator ","  '{print $1}' | tr ' ' '+')
 
 # Query the database.
-wget --post-data="CurrScr=basicsearch&Str=${title}&Index=AnyTitle&Button=Submit" http://tbabs.osl.state.or.us/cgi-bin/webopac.cgi/or1a
-
 #echo $title
-downbook=$(grep -wc '<TD  Valign="top">DB' or1a)
-cassette=$(grep -wc '<TD  Valign="top">C'  or1a)
-rm -f or1a
+#set -x
+wget http://tbabs.osl.state.or.us/or1aopac/search/search.jsf?q=${title}&i=title_text
+#set +x
 
-if (( downbook > 0  || cassette > 0 )); then
-   if (( cassette > 0 )); then
-      line=$line"Cassette  "
-   fi
-   if (( downbook > 0 )); then
-      line=$line"DownloadableBook   "
-   fi
+if grep -w 'Digital Book' search.jsf* ; then
    echo $line >> $found
 else
    echo $line >> $notfound
 fi
+rm -f search.jsf*
+
+sleep 1
 
 done < $infile
