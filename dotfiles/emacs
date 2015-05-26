@@ -6,6 +6,9 @@
 (setq load-path (append load-path (list "~ali/safe/lisp/")))
 (setq load-path (append load-path (list "~ali/safe/lisp/g-client")))
 
+(setq create-lockfiles nil)
+
+
 ;(setq buffer-file-coding-system "latin-1")
 
 (load "ali" )
