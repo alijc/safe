@@ -1,0 +1,18 @@
+#!/bin/bash
+
+file="xxx.html"
+url="http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword"
+
+
+echo -n "word? "
+
+while read word; do
+
+      wget -q -O $file $url="$word"
+
+      tail -n+3 $file | head -n-1
+      rm -f $file
+
+      echo -n "another? "
+done
+
