@@ -1,2 +1,0 @@
-#xterm -fg white -bg SeaGreen4 -e ssh -Y root@63.226.244.126 &
-xterm -fg white -bg DarkGreen -e ssh -Y root@63.226.244.126 &
