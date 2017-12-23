@@ -1,0 +1,16 @@
+# tr doesn't grok unicode
+####tr "āēīōū" "aeiou" | par
+
+awk '{ # remove all the macrons
+	gsub(/ā/, "A" );
+	gsub(/ē/, "E" );
+	gsub(/ī/, "I" );
+	gsub(/ō/, "O" );
+	gsub(/ū/, "U" );
+
+	gsub(/\./, ".\n\n" );
+	gsub(/:/, ":\n\n" );
+	gsub(/,/, ",\n" );
+
+     	print 
+     }'
