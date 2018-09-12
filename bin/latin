@@ -1,0 +1,7 @@
+#! /bin/bash
+
+#WORDSPATH=/usr/local/words-1.97Ed
+#WORDSPATH=~/bin/words-1.97Ed
+WORDSPATH=~/github/latin/whitakers-words/
+
+( cd $WORDSPATH ; ./bin/words $* )
