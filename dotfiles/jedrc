@@ -1,0 +1,34 @@
+
+require ("keydefs");
+
+% Home and End to move to beginning and end of lines
+setkey("bol", "\eOH"); %% Home to beginning of line
+setkey("eol", "\eOF"); %% End to end of line
+
+% ctrl+Up and Down to move by paragraphs.
+setkey("backward_paragraph", "\e[1;5A"); %% Ctrl Up
+setkey("forward_paragraph",  "\e[1;5B"); %% Ctrl Down
+
+setkey("yp_bkill_word", "^?"); %% Ctrl bs -> backwards delete word (don't work)
+
+% ctrl+Left and Right to move by words.
+setkey("ide_skip_word",      "\e[1;5C"); %% Ctrl+Right
+setkey("ide_bskip_word",     "\e[1;5D"); %% Ctrl+Left
+custom_variable ("Ide_Skippable_Chars",
+		     "\n\t !\"#$%&'()*+,-./:;<=>?@[\]^{|}~");
+define ide_bskip_word()
+{
+	bskip_chars (Ide_Skippable_Chars);
+	bskip_chars ("^" + Ide_Skippable_Chars);
+}
+
+define ide_skip_word()
+{
+	variable p = _get_point();
+       	skip_chars("^" + Ide_Skippable_Chars);
+       	if (_get_point() == p) 
+       	{
+	        skip_chars(Ide_Skippable_Chars);
+	      	skip_chars("^" + Ide_Skippable_Chars);
+     	}
+}
