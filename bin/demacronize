@@ -3,11 +3,11 @@
 
 awk '{
  	# remove all the macrons
-	gsub(/ā/, "A" );
-	gsub(/ē/, "E" );
-	gsub(/ī/, "I" );
-	gsub(/ō/, "O" );
-	gsub(/ū/, "U" );
+	gsub(/[Āā]/, "A" );
+	gsub(/[Ēē]/, "E" );
+	gsub(/[Īī]/, "I" );
+	gsub(/[Ōō]/, "O" );
+	gsub(/[Ūū]/, "U" );
 
 	# collapse spaces
 	gsub(/ +/, " ");
