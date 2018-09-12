@@ -14,6 +14,7 @@
 (load "ali" )
 (load "tab4" )
 (load "buffer" )
+(load "coconut-mode")
 ;;;(load-library "g")
 
 ;;(setq diary-file "~/hevanet/diary")
@@ -31,10 +32,13 @@
 ;                                (nntp-address "news.hevanet.com")
 ;				(nntp-rlogin-user-name "acorbin")))
 
+(set-default-font "Noto Mono 11")
 ;(set-default-font "Droid Sans Mono 11")
-(set-default-font "Liberation Mono 11")
+;(set-default-font "Liberation Mono 11")
 ;(set-default-font "Ubuntu Mono 11")
 
+; Does this help?
+;(setq redisplay-dont-pause t)
 
 (setq ps-print-color-p nil)
 ;;(setq ps-landscape-mode 1)
