@@ -21,6 +21,9 @@
 (setq auto-mode-alist (append '( ("\\.h$" . c++-mode) ) auto-mode-alist ))
 
 
+; get focus follows mouse to work for emacs
+(setq mouse-autoselect-window t)
+
 ;(setq gnus-select-method '(nntp "news.hevanet.com")) 
 ;(setq nntp-authinfo-function 'nntp-send-authinfo)
 
