@@ -17,10 +17,6 @@
 (load "coconut-mode")
 ;;;(load-library "g")
 
-;;(setq diary-file "~/hevanet/diary")
-;;(add-hook 'list-diary-entries-hook 'include-other-diary-files)
-;;(add-hook 'mark-diary-entries-hook 'mark-included-diary-files)
-
 ; .h files are to be C++ header files.
 (setq auto-mode-alist (append '( ("\\.h$" . c++-mode) ) auto-mode-alist ))
 
@@ -43,14 +39,6 @@
 (setq ps-print-color-p nil)
 ;;(setq ps-landscape-mode 1)
 
-
-;(setq view-diary-entries-initially t
-;      mark-diary-entries-in-calendar t
-;      mark-holidays-in-calendar t
-;      number-of-diary-entries 7)
-;(add-hook 'diary-display-hook 'fancy-diary-display)
-;(add-hook 'today-visible-calendar-hook 'calendar-mark-today)
-;(add-hook 'list-diary-entries-hook 'sort-diary-entries t)
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
