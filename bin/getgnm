@@ -3,6 +3,10 @@
 
 set -x
 baseurl="https://xwords.net/xwordjs/files/html5/"
+#Simply Daily are at:
+### http://simplydailypuzzles.com/daily-cryptic/puzzles/yyyy-mm/
+#and Chambers are at:
+###https://chambers.co.uk/wp-content/uploads/2018/12/ChambersDec18.js
 num=$1
 
 for (( i=0; i<6; num++, i++ )); do
