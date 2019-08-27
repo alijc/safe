@@ -11,7 +11,7 @@ my $puznum = shift( @ARGV );
 my $xml = new XML::Simple;
 
 # read what we need out of the XML file
-my $data = $xml->XMLin($puznum . "crp.xml");
+my $data = $xml->XMLin($puznum . "crp.js");
 my $metadata    = $data->{"rectangular-puzzle"}->{"metadata"};
 my $crossword   = $data->{"rectangular-puzzle"}->{"crossword"};
 my $grid        = $crossword->{"grid"};
