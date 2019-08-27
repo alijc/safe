@@ -1,0 +1,12 @@
+#!/bin/bash
+# getgnm  - Gets a week's worth of cryptics from the Globe and Mail
+
+set -x
+baseurl="http://www.theglobeandmail.com/static/crosswords"
+num=$1
+
+for (( i=0; i<6; num++, i++ )); do
+    file=${num}crp.xml
+    wget --wait=3 --random-wait $baseurl/$file
+    ./xword.pl $num
+done
