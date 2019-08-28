@@ -1,16 +1,25 @@
-#!/bin/bash
+#!/usr/bin/perl -w
 # js2xml - converts a crossword puzzle from js to xml format
 
-usage="js2xml infile > outfile"
+my $usage="Usage: js2xml infile > outfile\n";
 
-if [ "$#" -ne 1 ]; then
-    echo $usage
-    exit
-fi
+if ( $#ARGV != 0 ) {
+    print $usage;
+    exit;
+   }
 
-#set -x
-file=$(cat $1)
-file1=${file#var*\"}   # Strip off the initial "var = ....."
-file2=${file1//\\/}    # Convert all escaped quotes to plain ones
-file3=${file2%\";}     # Strip off the ending quote and semicolon
-echo $file3
+my $filename = $ARGV[0];
+open my $fh, '<', $filename or die "Can't open file $!";
+read $fh, my $file_content, -s $fh;
+
+# Strip off the initial "var = ....."
+$file_content =~ s/^var CrosswordPuzzleData = "//;
+
+# Convert all escaped quotes to plain ones
+$file_content =~ s/\\"/"/g;
+
+# Strip off the ending quote and semicolon
+$file_content =~ s/";$//;
+
+print $file_content . "\n";
+
