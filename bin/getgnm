@@ -20,5 +20,5 @@ for (( i=0; i<6; num++, i++ )); do
     perl -pi -e 's/";//g;' $file
     
     # Convert it to puz
-    ./xword.pl $num
+    ./xml2puz $num
 done

@@ -12,8 +12,8 @@ fi
 
 # User specific environment and startup programs
 
-PATH=$HOME/bin:/usr/java/bin:$PATH
-PATH=$HOME/eclipse:$HOME/eclipse/android-sdk-linux_x86/tools:$PATH
+#PATH=$HOME/bin:/usr/java/bin:$PATH
+#PATH=$HOME/eclipse:$HOME/eclipse/android-sdk-linux_x86/tools:$PATH
 BASH_ENV=$HOME/.bashrc
 USERNAME="ali"
 LANG=en_US
@@ -26,6 +26,6 @@ export EDITOR=emacs
 export USERNAME BASH_ENV PATH LANG
 
 # Set the draglock button (no longer works in xorg.conf)
-xinput set-prop 'PS2++ Logitech TrackMan' 'Evdev Drag Lock Buttons' 8 1
+xinput set-prop 'PS2++ Logitech TrackMan' 'libinput Drag Lock Buttons' 8 1
 
 #startx
