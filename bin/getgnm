@@ -10,7 +10,15 @@ baseurl="https://xwords.net/xwordjs/files/html5/"
 num=$1
 
 for (( i=0; i<6; num++, i++ )); do
+    # Get the file
     file=${num}crp.js
     wget --wait=3 --random-wait $baseurl/$file
-    ##./xword.pl $num
+
+    # Convert it from javascript to xml
+    perl -pi -e 's/var CrosswordPuzzleData = "//;' $file
+    perl -pi -e 's/\\"/"/g;' $file
+    perl -pi -e 's/";//g;' $file
+    
+    # Convert it to puz
+    ./xword.pl $num
 done
