@@ -1,4 +1,6 @@
 #!/usr/bin/perl -w
+# Convert a crossword puzzle from xml to puz format.
+
 
 # use module
 use XML::Simple;
