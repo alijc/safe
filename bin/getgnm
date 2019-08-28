@@ -11,14 +11,11 @@ num=$1
 
 for (( i=0; i<6; num++, i++ )); do
     # Get the file
-    file=${num}crp.js
-    wget --wait=3 --random-wait $baseurl/$file
+    wget --wait=3 --random-wait $baseurl/${num}crp.js
 
     # Convert it from javascript to xml
-    perl -pi -e 's/var CrosswordPuzzleData = "//;' $file
-    perl -pi -e 's/\\"/"/g;' $file
-    perl -pi -e 's/";//g;' $file
+    js2xml ${num}crp.js > ${num}crp.xml
     
-    # Convert it to puz
-    ./xml2puz $num
+    # Convert that to puz
+    xml2puz ${num}crp.xml ${num}.puz
 done

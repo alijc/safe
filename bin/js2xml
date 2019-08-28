@@ -1,0 +1,16 @@
+#!/bin/bash
+# js2xml - converts a crossword puzzle from js to xml format
+
+usage="js2xml infile > outfile"
+
+if [ "$#" -ne 1 ]; then
+    echo $usage
+    exit
+fi
+
+#set -x
+file=$(cat $1)
+file1=${file#var*\"}   # Strip off the initial "var = ....."
+file2=${file1//\\/}    # Convert all escaped quotes to plain ones
+file3=${file2%\";}     # Strip off the ending quote and semicolon
+echo $file3

@@ -7,13 +7,14 @@ use XML::Simple;
 use Data::Dumper;
 use strict;
 
-my $puznum = shift( @ARGV );
+my $xmlfile = shift( @ARGV );
+my $puzfile = shift( @ARGV );
 
 # create object
 my $xml = new XML::Simple;
 
 # read what we need out of the XML file
-my $data = $xml->XMLin($puznum . "crp.js");
+my $data = $xml->XMLin($xmlfile);
 my $metadata    = $data->{"rectangular-puzzle"}->{"metadata"};
 my $crossword   = $data->{"rectangular-puzzle"}->{"crossword"};
 my $grid        = $crossword->{"grid"};
@@ -81,7 +82,7 @@ my $hi_grid = hex("45") ^ (($c_grid & hex("ff00")) >> 8);
 my $hi_part = hex("44") ^ (($c_part & hex("ff00")) >> 8);
 
 # Write it all out
-open(PUZ, ">:raw", $puznum . ".puz") or die "Unable to open: $!";
+open(PUZ, ">:raw", $puzfile) or die "Unable to open: $!";
 
 print PUZ pack("va12", $checksum, "ACROSS&DOWN");
 print PUZ pack("vCCCCCCCCx20", $cibcksum, 
