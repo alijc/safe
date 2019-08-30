@@ -162,6 +162,7 @@ sub cksumregion {
 
 sub nulltermstring {
 	my $string = shift @_;
+	if ( ref($string) ) {$string="unknown"}; # an empty field in the xml?
 	return pack("a*x", $string );
 }
 
