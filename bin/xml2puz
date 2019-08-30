@@ -138,10 +138,10 @@ sub doclues {
 }
 
 sub formatclue {
-    my $cluenum = $_->{number};
+    #my $cluenum = $_->{number};
     my $cluetext = $_->{content};
     my $cluefmt = $_->{format};
-    return "$cluenum. $cluetext ($cluefmt)";
+    return "$cluetext ($cluefmt)";
 }
 
 
