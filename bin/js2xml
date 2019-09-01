@@ -18,6 +18,9 @@ $file_content =~ s/^var CrosswordPuzzleData = "//;
 # Convert all escaped quotes to plain ones
 $file_content =~ s/\\"/"/g;
 
+# Convert all (wide) em dashes to plain ones
+$file_content =~ s/–/-/g;
+
 # Strip off the ending quote and semicolon
 $file_content =~ s/";$//;
 
