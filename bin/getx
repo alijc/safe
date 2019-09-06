@@ -1,0 +1,50 @@
+#!/bin/bash
+# getx  - get cryptic puzzles from the internet
+
+###set -x
+globenmail_baseurl="https://xwords.net/xwordjs/files/html5/"
+dailycryptic_baseurl="http://simplydailypuzzles.com/daily-cryptic/puzzles/"
+#chambers_baseurl=
+###https://chambers.co.uk/wp-content/uploads/2018/12/ChambersDec18.js
+
+scriptname=$(basename "$0")
+if [ $# != 2 ]; then
+    echo "Usage: $scriptname {first puzzle to get} {number of puzzles to get}"
+    exit
+fi
+
+firstpuz=$1
+numberpuz=$2
+
+if [ "$scriptname" == "getxgm" ] ; then      ## Globe and Mail
+    base=$globenmail_baseurl
+    prefix="gm-"
+    suffix="crp.js"
+    num=$firstpuz
+
+elif [ "$scriptname" == "getxdp" ] ; then    ## Simply Daily
+    yearmonth=${firstpuz:0:7}
+    base=$dailycryptic_baseurl$yearmonth"/dc1-"$yearmonth"-"
+    prefix="dc-"$yearmonth"-"
+    suffix=".js"
+    num=${firstpuz:8:2}   # extract the day portion only
+
+else
+    echo "Unknown script name"
+    exit
+fi
+
+for (( i=0; i<$numberpuz; num++, i++ )); do
+    # Get the file
+    remote=$base$num$suffix
+    local=$prefix$num
+    echo "Fetching "$remote" to "$local".js..."
+
+    wget --wait=3 --random-wait $remote --output-document $local".js"
+
+    # Convert it from javascript to xml
+    js2xml ${local}.js > ${local}.xml
+    
+    # Convert that to puz
+    xml2puz ${local}.xml ${local}.puz
+done
