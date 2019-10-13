@@ -36,6 +36,7 @@ fi
 
 for (( i=0; i<$numberpuz; num++, i++ )); do
     # Get the file
+    num=$(printf "%02d" $num)
     remote=$base$num$suffix
     local=$prefix$num
     echo "Fetching "$remote" to "$local".js..."
