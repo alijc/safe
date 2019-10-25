@@ -28,6 +28,7 @@ elif [ "$scriptname" == "getxdp" ] ; then    ## Simply Daily
     prefix="dc-"$yearmonth"-"
     suffix=".js"
     num=${firstpuz:8:2}   # extract the day portion only
+    num=${num#0}          # remove any leading zeros
 
 else
     echo "Unknown script name"
@@ -48,4 +49,7 @@ for (( i=0; i<$numberpuz; num++, i++ )); do
     
     # Convert that to puz
     xml2puz ${local}.xml ${local}.puz
+
+    num=${num#0}          # remove any leading zeros
+
 done
