@@ -48,7 +48,8 @@ for (( i=0; i<$numberpuz; num++, i++ )); do
     js2xml ${local}.js > ${local}.xml
     
     # Convert that to puz
-    xml2puz ${local}.xml ${local}.puz
+    ### xml2puz ${local}.xml ${local}.puz
+    pangrid -f xml -t across-lite-binary -i ${local}.xml -o ${local}.puz
 
     num=${num#0}          # remove any leading zeros
 
