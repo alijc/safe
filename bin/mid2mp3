@@ -1,1 +1,1 @@
-timid swing-low-all-night1.mid -Ow -o - | lame - -b 64 xxx.mp3
+timid $1 -Ow -o - | lame - -b 64 $2
