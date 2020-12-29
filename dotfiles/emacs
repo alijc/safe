@@ -14,7 +14,8 @@
 (load "ali" )
 (load "tab4" )
 (load "buffer" )
-(load "coconut-mode")
+(load "abc-mode")
+;;;(load "coconut-mode")
 ;;;(load-library "g")
 
 ; .h files are to be C++ header files.
