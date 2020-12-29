@@ -1,0 +1,8 @@
+export PS1="\w>"
+
+#export PATH=/usr/lib/android-sdk/tools:$PATH
+
+export ANDROID_HOME=$HOME/android
+
+# Set the draglock button (no longer works in xorg.conf)
+xinput set-prop 'PS2++ Logitech TrackMan' 'libinput Drag Lock Buttons' 8 1
