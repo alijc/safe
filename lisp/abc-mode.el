@@ -1,15 +1,15 @@
 ;;; abc-mode.el --- Major mode for editing abc music files
 
-;; Copyright (C) 2002  Matthew K. Junker
+;; Copyright (C) 2002, 2003, 2004, 2006, 2008, 2012, 2013, 2014, 2017
+;; Matthew K. Junker
 
-;; Author: Matthew K. Junker <junkerdog@catalum.mit.edu> (remove the
-;; animals around the @)
+;; Author: Matthew K. Junker <junker@alum.mit.edu>
+;; Package-Version: 20171020.51809
 ;; Keywords: local, docs
-;; $Id: abc-mode.el,v 1.1 2006/06/01 03:51:34 ali Exp $
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 
 ;; This file is distributed in the hope that it will be useful,
@@ -23,21 +23,18 @@
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
-
+;;
 ;; A major mode for editing abc music files.  Includes some abc2midi
 ;; features.
-
-;; Initialization suggestion:
-;; (add-to-list 'auto-mode-alist '("\\.abc\\'"  . abc-mode))
-;; (add-to-list 'auto-mode-alist '("\\.abp\\'"  . abc-mode))
-;; (autoload 'abc-mode "abc-mode" "abc music files" t)
-;; (add-to-list 'auto-insert-alist '(abc-mode . abc-skeleton))
+;;
 
 ;; Written for Emacs version 21.  May or may not work with previous
 ;; versions.
 
-;; See the Common Customizations section below.
+;; See the Common Customizations section below.  Or run
+;; `abc-customize'.
 
+;; This package is stored at https://github.com/mkjunker/abc-mode.
 
 ;;; History:
 ;; 03/29/02 Added customization.
@@ -56,16 +53,32 @@
 ;; 09/17/02 Added prefix argument for setting preprocessor options.
 ;; 10/08/02 Added mouse input for notes and other symbols.
 ;; 10/18/02 Added space after %%staves in the skeleton
+;; 12/02/02 Added some mouse input symbols.
 
 ;;; Code:
 
 (require 'easymenu)
+(require 'newcomment)
+(require 'autoinsert)
+
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.abp\\'"  . abc-mode))
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.abc\\'"  . abc-mode))
+;;;###autoload
+(when (require 'autoinsert nil t)
+  (add-to-list 'auto-insert-alist '(abc-mode . abc-skeleton)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defgroup abc-mode nil
   "Major mode for editing and processing `abc' music files."
   :group 'local)
+
+(defcustom abc-mode-hook nil
+  "*Hook called by `abc-mode'."
+  :type 'hook
+  :group 'abc-mode)
 
 (defcustom abc-mode-comment-start "%" "*Comment string to use in abc mode."
   :type 'regexp :group 'abc-mode)
@@ -139,6 +152,7 @@ A list of pairs of the format (NAME-STRING OPTION-STRING)."
 (defcustom abc-midi-chord-list
   (concat
    "% additional\n"
+   "%%MIDI chordname °      0 3 6 9\n"
    "%%MIDI chordname sus2   0 2 7\n"
    "%%MIDI chordname sus4   0 5 7\n"
    "%%MIDI chordname msus   0 3 5 7\n"
@@ -189,173 +203,193 @@ This list is intended to match the built-in chords provided by abc2midi."
 
 (defcustom abc-midi-instruments-alist
   (list
-   (cons "Acoustic Grand Piano"                    1)
-   (cons "Bright Acoustic Piano"                   2)
-   (cons "Electric Grand Piano"                    3)
-   (cons "Honky-tonk Piano"                        4)
-   (cons "Electric Piano 1"                        5)
-   (cons "Electric Piano 2"                        6)
-   (cons "Harpsichord"                             7)
-   (cons "Clavi"                                   8)
-   (cons "Celesta"                                 9)
-   (cons "Glockenspiel"                           10)
-   (cons "Music Box"                              11)
-   (cons "Vibraphone"                             12)
-   (cons "Marimba"                                13)
-   (cons "Xylophone"                              14)
-   (cons "Tubular Bells"                          15)
-   (cons "Dulcimer"                               16)
-   (cons "Drawbar Organ"                          17)
-   (cons "Percussive Organ"                       18)
-   (cons "Rock Organ"                             19)
-   (cons "Church Organ"                           20)
-   (cons "Reed Organ"                             21)
-   (cons "Accordion"                              22)
-   (cons "Harmonica"                              23)
-   (cons "Tango Accordion"                        24)
-   (cons "Acoustic Guitar (nylon)"                25)
-   (cons "Acoustic Guitar (steel)"                26)
-   (cons "Electric Guitar (jazz)"                 27)
-   (cons "Electric Guitar (clean)"                28)
-   (cons "Electric Guitar (muted)"                29)
-   (cons "Overdriven Guitar"                      30)
-   (cons "Distortion Guitar"                      31)
-   (cons "Guitar harmonics"                       32)
-   (cons "Acoustic Bass"                          33)
-   (cons "Electric Bass (finger)"                 34)
-   (cons "Electric Bass (pick)"                   35)
-   (cons "Fretless Bass"                          36)
-   (cons "Slap Bass 1"                            37)
-   (cons "Slap Bass 2"                            38)
-   (cons "Synth Bass 1"                           39)
-   (cons "Synth Bass 2"                           40)
-   (cons "Violin"                                 41)
-   (cons "Viola"                                  42)
-   (cons "Cello"                                  43)
-   (cons "Contrabass"                             44)
-   (cons "Tremolo Strings"                        45)
-   (cons "Pizzicato Strings"                      46)
-   (cons "Orchestral Harp"                        47)
-   (cons "Timpani"                                48)
-   (cons "String Ensemble 1"                      49)
-   (cons "String Ensemble 2"                      50)
-   (cons "SynthStrings 1"                         51)
-   (cons "SynthStrings 2"                         52)
-   (cons "Choir Aahs"                             53)
-   (cons "Voice Oohs"                             54)
-   (cons "Synth Voice"                            55)
-   (cons "Orchestra Hit"                          56)
-   (cons "Trumpet"                                57)
-   (cons "Trombone"                               58)
-   (cons "Tuba"                                   59)
-   (cons "Muted Trumpet"                          60)
-   (cons "French Horn"                            61)
-   (cons "Brass Section"                          62)
-   (cons "SynthBrass 1"                           63)
-   (cons "SynthBrass 2"                           64)
-   (cons "Soprano Sax"                            65)
-   (cons "Alto Sax"                               66)
-   (cons "Tenor Sax"                              67)
-   (cons "Baritone Sax"                           68)
-   (cons "Oboe"                                   69)
-   (cons "English Horn"                           70)
-   (cons "Bassoon"                                71)
-   (cons "Clarinet"                               72)
-   (cons "Piccolo"                                73)
-   (cons "Flute"                                  74)
-   (cons "Recorder"                               75)
-   (cons "Pan Flute"                              76)
-   (cons "Blown Bottle"                           77)
-   (cons "Shakuhachi"                             78)
-   (cons "Whistle"                                79)
-   (cons "Ocarina"                                80)
-   (cons "Lead 1 (square)"                        81)
-   (cons "Lead 2 (sawtooth)"                      82)
-   (cons "Lead 3 (calliope)"                      83)
-   (cons "Lead 4 (chiff)"                         84)
-   (cons "Lead 5 (charang)"                       85)
-   (cons "Lead 6 (voice)"                         86)
-   (cons "Lead 7 (fifths)"                        87)
-   (cons "Lead 8 (bass + lead)"                   88)
-   (cons "Pad 1 (new age)"                        89)
-   (cons "Pad 2 (warm)"                           90)
-   (cons "Pad 3 (polysynth)"                      91)
-   (cons "Pad 4 (choir)"                          92)
-   (cons "Pad 5 (bowed)"                          93)
-   (cons "Pad 6 (metallic)"                       94)
-   (cons "Pad 7 (halo)"                           95)
-   (cons "Pad 8 (sweep)"                          96)
-   (cons "FX 1 (rain)"                            97)
-   (cons "FX 2 (soundtrack)"                      98)
-   (cons "FX 3 (crystal)"                         99)
-   (cons "FX 4 (atmosphere)"                     100)
-   (cons "FX 5 (brightness)"                     101)
-   (cons "FX 6 (goblins)"                        102)
-   (cons "FX 7 (echoes)"                         103)
-   (cons "FX 8 (sci-fi)"                         104)
-   (cons "Sitar"                                 105)
-   (cons "Banjo"                                 106)
-   (cons "Shamisen"                              107)
-   (cons "Koto"                                  108)
-   (cons "Kalimba"                               109)
-   (cons "Bag pipe"                              110)
-   (cons "Fiddle"                                111)
-   (cons "Shanai"                                112)
-   (cons "Tinkle Bell"                           113)
-   (cons "Agogo"                                 114)
-   (cons "Steel Drums"                           115)
-   (cons "Woodblock"                             116)
-   (cons "Taiko Drum"                            117)
-   (cons "Melodic Tom"                           118)
-   (cons "Synth Drum"                            119)
-   (cons "Reverse Cymbal"                        120)
-   (cons "Guitar Fret Noise"                     121)
-   (cons "Breath Noise"                          122)
-   (cons "Seashore"                              123)
-   (cons "Bird Tweet"                            124)
-   (cons "Telephone Ring"                        125)
-   (cons "Helicopter"                            126)
-   (cons "Applause"                              127)
-   (cons "Gunshot"                               128)
+   (cons "Acoustic Grand Piano"                  0)
+   (cons "Bright Acoustic Piano"                 1)
+   (cons "Electric Grand Piano"                  2)
+   (cons "Honky-tonk Piano"                      3)
+   (cons "Electric Piano 1"                      4)
+   (cons "Electric Piano 2"                      5)
+   (cons "Harpsichord"                           6)
+   (cons "Clavi"                                 7)
+   (cons "Celesta"                               8)
+   (cons "Glockenspiel"                          9)
+   (cons "Music Box"                             10)
+   (cons "Vibraphone"                            11)
+   (cons "Marimba"                               12)
+   (cons "Xylophone"                             13)
+   (cons "Tubular Bells"                         14)
+   (cons "Dulcimer"                              15)
+   (cons "Drawbar Organ"                         16)
+   (cons "Percussive Organ"                      17)
+   (cons "Rock Organ"                            18)
+   (cons "Church Organ"                          19)
+   (cons "Reed Organ"                            20)
+   (cons "Accordion"                             21)
+   (cons "Harmonica"                             22)
+   (cons "Tango Accordion"                       23)
+   (cons "Acoustic Guitar (nylon)"               24)
+   (cons "Acoustic Guitar (steel)"               25)
+   (cons "Electric Guitar (jazz)"                26)
+   (cons "Electric Guitar (clean)"               27)
+   (cons "Electric Guitar (muted)"               28)
+   (cons "Overdriven Guitar"                     29)
+   (cons "Distortion Guitar"                     30)
+   (cons "Guitar harmonics"                      31)
+   (cons "Acoustic Bass"                         32)
+   (cons "Electric Bass (finger)"                33)
+   (cons "Electric Bass (pick)"                  34)
+   (cons "Fretless Bass"                         35)
+   (cons "Slap Bass 1"                           36)
+   (cons "Slap Bass 2"                           37)
+   (cons "Synth Bass 1"                          38)
+   (cons "Synth Bass 2"                          39)
+   (cons "Violin"                                40)
+   (cons "Viola"                                 41)
+   (cons "Cello"                                 42)
+   (cons "Contrabass"                            43)
+   (cons "Tremolo Strings"                       44)
+   (cons "Pizzicato Strings"                     45)
+   (cons "Orchestral Harp"                       46)
+   (cons "Timpani"                               47)
+   (cons "String Ensemble 1"                     48)
+   (cons "String Ensemble 2"                     49)
+   (cons "SynthStrings 1"                        50)
+   (cons "SynthStrings 2"                        51)
+   (cons "Choir Aahs"                            52)
+   (cons "Voice Oohs"                            53)
+   (cons "Synth Voice"                           54)
+   (cons "Orchestra Hit"                         55)
+   (cons "Trumpet"                               56)
+   (cons "Trombone"                              57)
+   (cons "Tuba"                                  58)
+   (cons "Muted Trumpet"                         59)
+   (cons "French Horn"                           60)
+   (cons "Brass Section"                         61)
+   (cons "SynthBrass 1"                          62)
+   (cons "SynthBrass 2"                          63)
+   (cons "Soprano Sax"                           64)
+   (cons "Alto Sax"                              65)
+   (cons "Tenor Sax"                             66)
+   (cons "Baritone Sax"                          67)
+   (cons "Oboe"                                  68)
+   (cons "English Horn"                          69)
+   (cons "Bassoon"                               70)
+   (cons "Clarinet"                              71)
+   (cons "Piccolo"                               72)
+   (cons "Flute"                                 73)
+   (cons "Recorder"                              74)
+   (cons "Pan Flute"                             75)
+   (cons "Blown Bottle"                          76)
+   (cons "Shakuhachi"                            77)
+   (cons "Whistle"                               78)
+   (cons "Ocarina"                               79)
+   (cons "Lead 1 (square)"                       80)
+   (cons "Lead 2 (sawtooth)"                     81)
+   (cons "Lead 3 (calliope)"                     82)
+   (cons "Lead 4 (chiff)"                        83)
+   (cons "Lead 5 (charang)"                      84)
+   (cons "Lead 6 (voice)"                        85)
+   (cons "Lead 7 (fifths)"                       86)
+   (cons "Lead 8 (bass + lead)"                  87)
+   (cons "Pad 1 (new age)"                       88)
+   (cons "Pad 2 (warm)"                          89)
+   (cons "Pad 3 (polysynth)"                     90)
+   (cons "Pad 4 (choir)"                         91)
+   (cons "Pad 5 (bowed)"                         92)
+   (cons "Pad 6 (metallic)"                      93)
+   (cons "Pad 7 (halo)"                          94)
+   (cons "Pad 8 (sweep)"                         95)
+   (cons "FX 1 (rain)"                           96)
+   (cons "FX 2 (soundtrack)"                     97)
+   (cons "FX 3 (crystal)"                        98)
+   (cons "FX 4 (atmosphere)"                     99)
+   (cons "FX 5 (brightness)"                     100)
+   (cons "FX 6 (goblins)"                        101)
+   (cons "FX 7 (echoes)"                         102)
+   (cons "FX 8 (sci-fi)"                         103)
+   (cons "Sitar"                                 104)
+   (cons "Banjo"                                 105)
+   (cons "Shamisen"                              106)
+   (cons "Koto"                                  107)
+   (cons "Kalimba"                               108)
+   (cons "Bag pipe"                              109)
+   (cons "Fiddle"                                110)
+   (cons "Shanai"                                111)
+   (cons "Tinkle Bell"                           112)
+   (cons "Agogo"                                 113)
+   (cons "Steel Drums"                           114)
+   (cons "Woodblock"                             115)
+   (cons "Taiko Drum"                            116)
+   (cons "Melodic Tom"                           117)
+   (cons "Synth Drum"                            118)
+   (cons "Reverse Cymbal"                        119)
+   (cons "Guitar Fret Noise"                     120)
+   (cons "Breath Noise"                          121)
+   (cons "Seashore"                              122)
+   (cons "Bird Tweet"                            123)
+   (cons "Telephone Ring"                        124)
+   (cons "Helicopter"                            125)
+   (cons "Applause"                              126)
+   (cons "Gunshot"                               127)
    ;; aliases
-   (cons "piano"                                 1)
-   (cons "piano, acoustic grand"                 1)
-   (cons "piano, bright acoustic"                2)
-   (cons "piano, electric grand"                 3)
-   (cons "piano, honky-tonk"                     4)
-   (cons "piano, electric 1"                     5)
-   (cons "piano, electric 2"                     6)
-   (cons "organ"                                 20)
-   (cons "organ, drawbar"                        17)
-   (cons "organ, percussive"                     18)
-   (cons "organ, rock"                           19)
-   (cons "organ, church"                         20)
-   (cons "organ, reed"                           21)
-   (cons "accordion, tango"                      24)
-   (cons "guitar"                                25)
-   (cons "guitar, acoustic (nylon)"              25)
-   (cons "guitar, acoustic (steel)"              26)
-   (cons "steel guitar"                          26)
-   (cons "guitar, electric (jazz)"               27)
-   (cons "guitar, electric (clean)"              28)
-   (cons "guitar, electric (muted)"              29)
-   (cons "guitar, overdriven"                    30)
-   (cons "guitar, distortion"                    31)
-   (cons "bass"                                  33)
-   (cons "bass, acoustic"                        33)
-   (cons "bass, electric (finger)"               34)
-   (cons "bass, electric (pick)"                 35)
-   (cons "bass, fretless"                        36)
-   (cons "bass, slap 1"                          37)
-   (cons "bass, slap 2"                          38)
-   (cons "bass, synth 1"                         39)
-   (cons "bass, synth 2"                         40)
-   (cons "trumpet, muted"                        60)
-   (cons "sax, soprano"                          65)
-   (cons "sax, alto"                             66)
-   (cons "sax, tenor"                            67)
-   (cons "sax, baritone"                         68))
-  "*List of MIDI instrument codes."
+   (cons "piano"                                 0)
+   (cons "piano, acoustic grand"                 0)
+   (cons "piano, bright acoustic"                1)
+   (cons "piano, electric grand"                 2)
+   (cons "piano, honky-tonk"                     3)
+   (cons "piano, electric 1"                     4)
+   (cons "piano, electric 2"                     5)
+   (cons "organ"                                 19)
+   (cons "organ, drawbar"                        16)
+   (cons "organ, percussive"                     17)
+   (cons "organ, rock"                           18)
+   (cons "organ, church"                         19)
+   (cons "organ, reed"                           20)
+   (cons "accordion, tango"                      23)
+   (cons "guitar"                                24)
+   (cons "guitar, acoustic (nylon)"              24)
+   (cons "guitar, acoustic (steel)"              25)
+   (cons "steel guitar"                          25)
+   (cons "guitar, electric (jazz)"               26)
+   (cons "guitar, electric (clean)"              27)
+   (cons "guitar, electric (muted)"              28)
+   (cons "guitar, overdriven"                    29)
+   (cons "guitar, distortion"                    30)
+   (cons "bass"                                  32)
+   (cons "bass, acoustic"                        31)
+   (cons "bass, electric (finger)"               33)
+   (cons "bass, electric (pick)"                 34)
+   (cons "bass, fretless"                        35)
+   (cons "bass, slap 1"                          36)
+   (cons "bass, slap 2"                          37)
+   (cons "bass, synth 1"                         38)
+   (cons "bass, synth 2"                         39)
+   (cons "trumpet, muted"                        59)
+   (cons "sax, soprano"                          64)
+   (cons "sax, alto"                             65)
+   (cons "sax, tenor"                            66)
+   (cons "sax, baritone"                         67))
+  "*List of MIDI instrument codes.
+
+Note that in previous versions these numbers were 1 greater.
+From the documentation of abc2midi:
+
+Abc2midi: Some of the documentation which comes with abc2midi
+states that the MIDI program number should range between 1 and
+128; however, as far back as 2003, abc2midi expects the range to
+be between 0 and 127 following the MIDI standard. The
+documentation abcguide.txt and the man page abc2midi.1 have been
+corrected.  Unfortunately, the Abc standard was based on the old
+documentation.  It is too late to change abc2midi to comply with
+the abc standard since there are too many abc existing files
+using the current convention. As a temporary compromise, I have
+added a new command %%MIDI programbase.
+
+The current default is (so you do not need this line).
+%%MIDI programbase 0
+
+To change to the abc standard use
+%%MIDI programbase 1"
   :type '(alist :key-type string :value-type number)
   :group 'abc-abc2midi)
 
@@ -405,6 +439,8 @@ besides titles."
   :type 'string :group 'abc-mode-tags)
 (defcustom abc-composer-tag "C:" "*Composer tag."
   :type 'string :group 'abc-mode-tags)
+(defcustom abc-lyricist-tag "A:" "*Lyricist tag."
+  :type 'string :group 'abc-mode-tags)
 (defcustom abc-meter-tag "M:" "*Meter tag."
   :type 'string :group 'abc-mode-tags)
 (defcustom abc-length-tag "L:" "*Unit note length tag."
@@ -418,7 +454,7 @@ besides titles."
 (defcustom abc-key-tag "K:" "*Key tag."
   :type 'string :group 'abc-mode-tags)
 
-(defcustom abc-area-tag "A:" "*Area tag."
+(defcustom abc-area-tag "A:" "*Area tag (deprecated)."
   :type 'string :group 'abc-mode-tags)
 (defcustom abc-book-tag "B:" "*Book tag."
   :type 'string :group 'abc-mode-tags)
@@ -446,7 +482,20 @@ besides titles."
   :type 'string :group 'abc-mode-tags)
 (defcustom abc-words-tag "w:" "*Words (Internal) tag."
   :type 'string :group 'abc-mode-tags)
-(defcustom abc-transcription-tag "Z:" "*Transcription Note tag."
+(defcustom abc-transcription-tag "Z:" "*Transcription note tag."
+  :type 'string :group 'abc-mode-tags)
+(defcustom abc-version-tag "%%abc-version " "*Version extended information tag."
+  :type 'string :group 'abc-mode-tags)
+(defcustom abc-copyright-tag "%%abc-copyright "
+  "*Copyright extended information tag."
+  :type 'string :group 'abc-mode-tags)
+(defcustom abc-creator-tag "%%abc-creator " "*Creator extended information tag."
+  :type 'string :group 'abc-mode-tags)
+(defcustom abc-charset-tag "%%abc-charset " "*Charset extended information tag."
+  :type 'string :group 'abc-mode-tags)
+(defcustom abc-include-tag "%%abc-include " "*Include extended information tag."
+  :type 'string :group 'abc-mode-tags)
+(defcustom abc-edited-by-tag "%%abc-edited-by " "*Edited by tag."
   :type 'string :group 'abc-mode-tags)
 
 
@@ -456,21 +505,21 @@ besides titles."
 
 (defcustom abc-mouse-pad
   "\"                     -- E --    -- c' --  !(crescendo! !crescendo)!
-6               # _ =   D          b       !(diminuendo! !diminuendo)!
-7                   -- C --    -- a --     
-9                     B,         g         space
-11  ---------------- A, ------- f -------- newline 
-13      ( [  ^ = _  G,         e  ] ) |    undo <-
+6               ^ _ =   D          b       !(diminuendo! !diminuendo)!
+7                   -- C --    -- a --
+9                     B,         g         space %
+11  ---------------- A, ------- f -------- newline
+13      ( [  ^ = _  G,         e  ] ) | :  undo <-
 m   -------------- F, -- z -- d ---------- , '
 maj        H      E,         c  /  2 3/2 >
-dim ------------ D, -- x -- B ------------
-#          .    C,         A    /4 4 3/4 <
-b   ---------- B,, ------ G --------------
-           L  A,,        F      /8 8 3/8
-    -------- G,, ------ E ----------------
-            F,,        D    V: 1 2 3 4 5
-        -- E,, --  -- C --     6 7 8 9
-          D,,        B,
+dim ------------ D, -- x -- B ------------ !pppp! !ppp! !pp! !p! !mp!
+#          .    C,         A    /4 4 3/4 < !mf! !f! !ff! !fff! !ffff! !sfz!
+b   ---------- B,, - Z -- G --------------
+           L  A,,        F      /8 8 3/8   !accent! !fermata! !emphasis!
+    -------- G,, ------ E ---------------- !breath! !shortphrase! !mediumphrase!
+            F,,        D    V: 1 2 3 4 5   !longphrase!
+        -- E,, --  -- C --     6 7 8 9     !segno! !coda! !D.S.! !D.C.!
+          D,,        B,                    !fine!
       -- C,, --  -- A, --\n"
   "*Array of symbols for mouse entry."
   :type 'string :group 'abc-mouse)
@@ -480,7 +529,7 @@ b   ---------- B,, ------ G --------------
         (cons "space"   (function (lambda () (insert " "))))
         (cons "newline" (function (lambda () (insert "\n"))))
         (cons "undo"    (function (lambda () (advertised-undo)))))
-  "*Alist of mouse buffer text and desired actions."
+  "*Alist of mouse buffer (`abc-mouse-pad') text and desired actions."
   :type '(alist :key-type string :value-type function) :group 'abc-mouse)
 
 
@@ -673,7 +722,7 @@ These options will be retained.
 
 Optional argument OPTIONS is program flags beyond the current option set."
   (interactive "P")
-  (abc-run-abc2ps-base 
+  (abc-run-abc2ps-base
    argp
    (concat " -e "
            (number-to-string (abc-current-song-number))
@@ -839,6 +888,8 @@ These options will be retained."
     (define-key map "\C-c\C-aa" 'abc-run-abc2abc)
     (define-key map "\C-c\C-ap" 'abc-preprocess-buffer)
     (define-key map "\C-c\C-ao" 'abc-set-preprocess-options)
+    ;; C-c C-c short cut for entering chords
+    (define-key map "\C-c\C-c"  'abc-insert-chord)
     map)
   "Keymap for abc mode.")
 
@@ -939,6 +990,7 @@ These options will be retained."
               "Common Header Fields"
               ["Reference Number (First)"   (insert abc-reference-tag)     t]
               ["Title"                      (insert abc-title-tag)         t]
+              ["Lyricist"                   (insert abc-lyricist-tag)      t]
               ["Composer"                   (insert abc-composer-tag)      t]
               ["Meter"                      (insert abc-meter-tag)         t]
               ["Unit Note Length"           (insert abc-length-tag)        t]
@@ -947,60 +999,67 @@ These options will be retained."
               ["Staves"                     (insert abc-staves-tag " ")    t]
               ["Key (Last)"                 (insert abc-key-tag)           t]
               "--"
-              ["Area"                       (insert abc-area-tag)          t]
+              ["Area (deprecated)"          (insert abc-area-tag)          t]
               ["Book"                       (insert abc-book-tag)          t]
               ["Discography"                (insert abc-discography-tag)   t]
-              ["File Name"                  (insert abc-filename-tag)      t]
+              ["File Name (URL)"            (insert abc-filename-tag)      t]
               ["Group"                      (insert abc-group-tag)         t]
               ["History"                    (insert abc-history-tag)       t]
               ["Information"                (insert abc-information-tag)   t]
               ["Notes"                      (insert abc-notes-tag)         t]
-              ["Origin"                     (insert abc-origin-tag)        t]
+              ["Origin (place)"             (insert abc-origin-tag)        t]
               ["Rhythm"                     (insert abc-rhythm-tag)        t]
               ["Source"                     (insert abc-source-tag)        t]
               ["User Defined"               (insert abc-user-tag)          t]
               ["Words (at End)"             (insert abc-words-end-tag)     t]
               ["Words (Internal)"           (insert abc-words-tag)         t]
-              ["Transcription Note"         (insert abc-transcription-tag) t]
+              "--"
+              "Extended Information"
+              ["ABC version"                (insert abc-version-tag)       t]
+              ["ABC copyright"              (insert abc-copyright-tag)     t]
+              ["ABC creator"                (insert abc-creator-tag)       t]
+              ["ABC charset"                (insert abc-charset-tag)       t]
+              ["ABC include"                (insert abc-include-tag)       t]
+              ["ABC edited-by"              (insert abc-edited-by-tag)     t]
               )
         (list "MIDI"
               ["Melody Channel (1-16)"    (insert "%%MIDI channel ") t]
               (cons "Instrument"
                     (mapcar
-                     '(lambda (l)
-                        (vector (car l)
-                                (list 'insert
-                                      (list 'format "%d %% %s\n"
-                                            (cdr l) (car l)))))
+                     (lambda (l)
+                       (vector (car l)
+                               (list 'insert
+                                     (list 'format "%d %% %s\n"
+                                           (cdr l) (car l)))))
                      abc-midi-instruments-alist))
               (cons "Main Instrument"
                     (mapcar
-                     '(lambda (l)
-                        (vector
-                         (car l)
-                         (list 'insert
-                               (list 'format "%%%%MIDI program %d %% %s\n"
-                                     (cdr l) (car l)))))
+                     (lambda (l)
+                       (vector
+                        (car l)
+                        (list 'insert
+                              (list 'format "%%%%MIDI program %d %% %s\n"
+                                    (cdr l) (car l)))))
                      abc-midi-instruments-alist))
               (cons "Bass Instrument"
                     (mapcar
-                     '(lambda (l)
-                        (vector
-                         (car l)
-                         (list 'insert
-                               (list 'format
-                                     "%%%%MIDI bassprog %d %% %s\n"
-                                     (cdr l) (car l)))))
+                     (lambda (l)
+                       (vector
+                        (car l)
+                        (list 'insert
+                              (list 'format
+                                    "%%%%MIDI bassprog %d %% %s\n"
+                                    (cdr l) (car l)))))
                      abc-midi-instruments-alist))
               (cons "Chord Instrument"
                     (mapcar
-                     '(lambda (l)
-                        (vector
-                         (car l)
-                         (list 'insert
-                               (list 'format
-                                     "%%%%MIDI chordprog %d %% %s\n"
-                                     (cdr l) (car l)))))
+                     (lambda (l)
+                       (vector
+                        (car l)
+                        (list 'insert
+                              (list 'format
+                                    "%%%%MIDI chordprog %d %% %s\n"
+                                    (cdr l) (car l)))))
                      abc-midi-instruments-alist))
               ["Insert Instrument"        abc-insert-instrument           t]
               "--"
@@ -1023,11 +1082,11 @@ These options will be retained."
         ["Set abc2ps Options"           abc-set-abc2ps-option-set t]
         (cons "Select Option Set"
               (mapcar
-               '(lambda (l)
-                  (vector (car l)
-                          (list 'setq 'abc-preferred-options (cdr l))
-                          :style 'radio :selected
-                          (list 'string= 'abc-preferred-options (cdr l))))
+               (lambda (l)
+                 (vector (car l)
+                         (list 'setq 'abc-preferred-options (cdr l))
+                         :style 'radio :selected
+                         (list 'string= 'abc-preferred-options (cdr l))))
                abc-option-alist))
         "--"
         "MIDI"
@@ -1041,8 +1100,8 @@ These options will be retained."
         "--"
         ["Enable Mouse Input"           abc-mouse              t]
         ["Remove Mouse Window"          delete-other-windows   t]
-))
-        
+        ))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1064,13 +1123,14 @@ Special symbols (BS, SPACE, NL, undo, etc.) are defined in
       (switch-to-buffer-other-window "*abc-notes*")
       (if newp (insert abc-mouse-pad))
       (goto-char 1)
-      (enlarge-window 
+      (enlarge-window
        (1+ (- (count-lines (point-min) (point-max)) (window-height)))))
     (local-set-key [mouse-1] 'abc-insert-mouse-note-other))
   (other-window 1))
 
 (defun abc-insert-mouse-note-other (event)
-  "Insert the selected symbol in the other window at its point."
+  "Insert the selected symbol in the other window at its point.
+Argument EVENT is the mouse event."
   (interactive "e")
   (save-excursion
     (let ((note (abc-cursor-to-note)))
@@ -1087,7 +1147,7 @@ Special symbols (BS, SPACE, NL, undo, etc.) are defined in
 (defun abc-cursor-to-note ()
   "Get the space delimited string at the point."
   (if (looking-at "[[:space:]\n]")
-      (progn 
+      (progn
         (message "Not a symbol.")
         nil)
     (or (re-search-backward "[[:space:]]" (point-min) t)
@@ -1099,12 +1159,13 @@ Special symbols (BS, SPACE, NL, undo, etc.) are defined in
 
 (defun abc-event-to-note ()
   "Symbol at the event position (mouse click)."
-  (save-excursion
+  (with-current-buffer
     (set-buffer (window-buffer (posn-window (event-start last-input-event))))
     (goto-char (posn-point (event-start last-input-event)))
     (abc-cursor-to-note)))
 
 
+;;;###autoload
 (define-derived-mode abc-mode text-mode "abc-mode"
    "Major mode for editing abc music files.
 
@@ -1172,8 +1233,6 @@ installation.
 Use TeX-type quoting `` & '' for double quotes in lyrics.
 
 \\{abc-mode-map}"
-
-   (interactive)
    (kill-all-local-variables)
    (use-local-map        abc-mode-map)
    (easy-menu-add        abc-mode-menu)
@@ -1195,7 +1254,7 @@ Use TeX-type quoting `` & '' for double quotes in lyrics.
         '(abc-font-lock-keywords nil nil))
    (make-local-variable 'abc-options)
    (if abc-use-song-as-page-delimiter
-       (set (make-variable-buffer-local 'page-delimiter) 
+       (set (make-local-variable 'page-delimiter)
             abc-song-number-regexp))
    (run-hooks 'abc-mode-hook))
 
@@ -1228,6 +1287,7 @@ Optional argument PROMPT is the prompt to show."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-skeleton abc-staves "" "" \n abc-staves-tag " {"
   ("Staff #: " " " str) & " }" | -11)
+
 (define-skeleton abc-midi-chords
   "MIDI chords in addition to the predefined ones."
   nil
@@ -1235,6 +1295,7 @@ Optional argument PROMPT is the prompt to show."
   _)
 
 
+;;;###autoload
 (define-skeleton abc-skeleton
   "Skeleton for a song"
   nil
@@ -1243,13 +1304,16 @@ Optional argument PROMPT is the prompt to show."
       (number-to-string (1+ (abc-current-song-number t)))
     "1")
   ("Title: "    \n abc-title-tag str)
+  \n abc-filename-tag "$Id: abc-mode.el 906 2013-01-11 15:52:26Z junker $"
+  ("Lyricist: " \n abc-lyricist-tag str)
   ("Composer: " \n abc-composer-tag str)
-  ("Book: "     \n abc-book-tag str)
-  ("Source: "   \n abc-source-tag str)
+  ("Book (original source): "     \n abc-book-tag str)
+  ("Source (current source): "   \n abc-source-tag str)
+  ("Notes (alternate sources, copyright): "   \n abc-notes-tag str)
   \n abc-meter-tag (skeleton-read "Meter: " abc-default-meter nil)
   \n abc-length-tag (skeleton-read "Default length: " abc-default-length nil)
   \n abc-tempo-tag (skeleton-read "Tempo: " abc-default-tempo nil)
-  (abc-staves)
+  '(abc-staves)
   \n abc-key-tag (skeleton-read "Key: " abc-default-key nil)
   "\n%%MIDI program "
   '(unless (abc-insert-instrument "Main")
@@ -1267,11 +1331,51 @@ Optional argument PROMPT is the prompt to show."
 ;  \n "%V: 2"
   \n _)
 
+;;;###autoload
+(defun abc-align-bars (begin end)
+  "Align on bar lines \"|\" between BEGIN and END (region)."
+  (interactive "r")
+  (add-to-list 'align-text-modes 'abc-mode)
+  (save-excursion
+    (goto-char begin)
+    (while (re-search-forward "[ ]+|[ ]+" end t)
+      (replace-match " | ")))
+  (align-regexp begin end "\\(.\\)|" 1 1 t))
+
+(defvar abc-chord-history nil
+  "Recent chord entries.  Used by `abc-insert-chord'.")
+
+(defun abc-insert-chord ()
+  "Insert chord symbol with quotes."
+  (interactive)
+  (insert "\"")
+  (let ((input (read-from-minibuffer
+                "Chord: " nil nil nil 'abc-chord-history nil)))
+    (insert input)
+    (add-to-history 'abc-chord-history input))
+  (insert "\""))
+
+;;;###autoload
 (defun abc-customize ()
   "Customize `abc-mode' settings."
   (interactive)
   (customize-group 'abc-mode))
 
+(defun abc-extract-chords ()
+  "Leave only chords, rests, and bar lines on the current line."
+  (interactive)
+  (save-restriction
+    (narrow-to-region (line-beginning-position) (line-end-position))
+    (beginning-of-line)
+    (while (< (point) (line-end-position))
+      (cond ((looking-at "\".*?\"") (goto-char (match-end 0)))
+            ((looking-at "[A-Ga-g]")
+             (kill-region (match-beginning 0) (match-end 0))
+             (insert "x"))
+            ((looking-at "[',()^_=]") (delete-char 1))
+            ((looking-at "[[]") (delete-char 1))
+            ((looking-at "[]]") (delete-char 1))
+            (t (forward-char))))))
+
 (provide 'abc-mode)
 ;;; abc-mode.el ends here
-
