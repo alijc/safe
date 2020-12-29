@@ -1,0 +1,37 @@
+part=$1	# 1=soprano, 2=alto, 3=tenor
+infile=$2
+
+case $part in
+1)
+    name=soprano
+    other1=2
+    other2=3
+    ;;
+2)
+    name=alto
+    other1=1
+    other2=3
+    ;;
+3)
+    name=tenor
+    other1=1
+    other2=2
+    ;;
+esac
+
+outfile=xxx-${name}.abc
+
+# Copy the abc file, muffling the other parts by reverting to the default piano
+grep -v -e "program $other1" -e "program $other2" $infile > $outfile
+
+# Generate midi files from the new abc file
+abc2midi $outfile -t -n 33
+
+# Convert each midi file to an mp3 file, appending this part's name
+for infile in *.mid; do
+   outfile=${infile%.mid}-${name}.mp3;
+   mid2mp3 $infile $outfile;
+done
+
+# Clean away the midi files
+rm *mid
