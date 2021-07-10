@@ -1,1 +1,1 @@
-timid $1 -Ow -o - | lame - -b 64 $2
+timidity $1 -Ow -o - | lame - -b 64 $2
