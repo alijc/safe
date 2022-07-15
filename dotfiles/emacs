@@ -10,8 +10,8 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-(setq load-path (append load-path (list "~ali/safe/lisp/")))
-(setq load-path (append load-path (list "~ali/safe/lisp/g-client")))
+(setq load-path (append load-path (list "~ali/github/safe/lisp/")))
+(setq load-path (append load-path (list "~ali/github/safe/lisp/g-client")))
 
 (setq create-lockfiles nil)
 
