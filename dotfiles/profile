@@ -27,4 +27,4 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 # add dart to path
-export PATH="$PATH:/usr/lib/dart/bin
+export PATH="$PATH:/usr/lib/dart/bin"
