@@ -22,7 +22,22 @@
 (load "tab4" )
 (load "buffer" )
 (load "abc-mode")
-;;;(load "coconut-mode")
+
+;; Neat idea, but didn't work.
+;; With no issues at all logged in github.
+;; I'm thinking it's a vanity project that no one but the author uses.
+;(use-package piano-mode
+;  :custom
+;  (piano-key-down-function 'piano-cl-collider-play-note)
+;  (piano-key-up-function 'piano-cl-collider-release-note)
+;  :bind (("C-c k" . piano-mode)
+;         :map piano-mode-map
+;         ("\\" . piano-cl-collider-change-instrument)
+;         ("|" . piano-cl-collider-change-parameters))
+;  :config
+;  (require 'piano-mode-cl-collider))
+
+;;;(Load "coconut-mode")
 ;;;(load-library "g")
 
 ; .h files are to be C++ header files.
@@ -39,7 +54,8 @@
 ;                                (nntp-address "news.hevanet.com")
 ;				(nntp-rlogin-user-name "acorbin")))
 
-(set-default-font "Noto Mono 11")
+(set-face-attribute 'default nil :font "Noto Mono 11" )
+(set-frame-font "Noto Mono 11")
 ;(set-default-font "Droid Sans Mono 11")
 ;(set-default-font "Liberation Mono 11")
 ;(set-default-font "Ubuntu Mono 11")
