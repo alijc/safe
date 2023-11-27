@@ -28,3 +28,9 @@ fi
 
 # add dart to path
 export PATH="$PATH:/usr/lib/dart/bin"
+
+# add abc2svg to path
+export PATH="$PATH:$HOME/node_modules/.bin"
+
+# shorten prompt
+export PS1="\w>"
