@@ -26,6 +26,6 @@ export EDITOR=emacs
 export USERNAME BASH_ENV PATH LANG
 
 # Set the draglock button (no longer works in xorg.conf)
-xinput set-prop 'PS2++ Logitech TrackMan' 'libinput Drag Lock Buttons' 8 1
+##xinput set-prop 'PS2++ Logitech TrackMan' 'libinput Drag Lock Buttons' 8 1
 
 #startx
