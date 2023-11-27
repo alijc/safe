@@ -22,6 +22,7 @@
 (load "tab4" )
 (load "buffer" )
 (load "abc-mode")
+(load "dart-mode")
 
 ;; Neat idea, but didn't work.
 ;; With no issues at all logged in github.
