@@ -4,5 +4,5 @@
 dir=$1
 mkdir -p $dir
 cd $dir
-cdparanoia --quiet --batch --disable-paranoia
-eject
+cdparanoia --quiet --batch --disable-paranoia -d /dev/sr1
+eject /dev/sr1
